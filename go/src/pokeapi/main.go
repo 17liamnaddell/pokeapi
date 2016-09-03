@@ -1,7 +1,10 @@
 package main
 
+import "net/http"
 import "fmt"
 
 func main() {
-	fmt.Println("hi")
-} 
+	poke, err := http.Get("http://pokeapi.co/api/v2/pokemon/1")
+
+	fmt.Println(err, poke)
+}
