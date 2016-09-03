@@ -1,10 +1,12 @@
 package main
 
 import "net/http"
-import "fmt"
+
+//import "fmt"
+import "io/ioutil"
 
 func main() {
-	poke, err := http.Get("http://pokeapi.co/api/v2/pokemon/1")
-
-	fmt.Println(err, poke)
+	poke, _ := http.Get("http://pokeapi.co/api/v2/pokemon/")
+	text, _ := ioutil.ReadAll(poke.Body)
+	ioutil.WriteFile("output.txt", text, 0666)
 }
