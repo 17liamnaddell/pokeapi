@@ -1,0 +1,2 @@
+export GOPATH=$HOME/repos/pokeapi/go
+export PATH=$HOME/repos/pokeapi/bin:$PATH
