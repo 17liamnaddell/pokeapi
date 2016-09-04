@@ -6,6 +6,8 @@ import "fmt"
 import "io/ioutil"
 import "encoding/json"
 
+type mytype []interface{}
+
 func main() {
 	poke, _ := http.Get("http://pokeapi.co/api/v2/pokemon/")
 	text, _ := ioutil.ReadAll(poke.Body)
@@ -19,7 +21,9 @@ func main() {
 	data := map[string]interface{}{}
 	err4 := json.Unmarshal(drive, &data)
 	fmt.Println("errror: ", err4)
-	fmt.Println(data["abilities"])
+	inn := data["abilities"].([]interface{})
+	fmt.Println(inn)
+	fmt.Println(inn[0])
 }
 
 func checkerr(err error) {
