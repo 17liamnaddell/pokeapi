@@ -42,11 +42,10 @@ func main() {
 }
 
 func printit(data Pokedata) {
-	fmt.Println(data.Name + ":")
-	var pritme []string
-	v := reflect.ValueOf(data.Abilites)
+	fmt.Println(data, ":")
+	v := reflect.ValueOf(data.Abilities)
 	for i := 0; i < v.NumField(); i++ {
-		fmt.Println("fixme")
+		fmt.Println(v.NumField())
 	}
 }
 
