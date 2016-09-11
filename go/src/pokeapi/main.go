@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	//"os"
-	"reflect"
 )
 
 type Pokedata struct {
@@ -42,10 +41,15 @@ func main() {
 }
 
 func printit(data Pokedata) {
-	fmt.Println(data, ":")
-	v := reflect.ValueOf(data.Abilities)
-	for i := 0; i < v.NumField(); i++ {
-		fmt.Println(v.NumField())
+	fmt.Println(data.Name, ":")
+	var whtspc = `	`
+	rang := len(data.Abilities)
+	for i := 0; i < rang; i++ {
+		fmt.Println(whtspc, "Ability ", i, ": ", data.Abilities[i].Ability.Name)
+	}
+	fmt.Println(whtspc, "Weight"+": ", data.Weight)
+	for q := 0; q < len(data.Types); q++ {
+		fmt.Println(whtspc, "Type ", q, ": ", data.Types[q].Type.Name)
 	}
 }
 
