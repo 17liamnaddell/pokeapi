@@ -10,3 +10,4 @@ will find a pokemon under that name
 Caches the pokemon 
 ###pokeapi -findall
 lists all pokemon
+caches the data
