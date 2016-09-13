@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	//C means that we arnt writing go-colors.R everytime we want to write in the color red, instead we write C.R. In python this is writen like
+	//import blah as b
+	//MAKE SURE TO WRITE C IN CAPS
 	C "github.com/skilstak/go-colors"
 	"io/ioutil"
 	"log"
