@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	//"os"
+	"os"
 )
 
 type Pokedata struct {
@@ -25,19 +26,22 @@ type Pokedata struct {
 }
 
 func main() {
-	poke, _ := http.Get("http://pokeapi.co/api/v2/pokemon/")
-	data := map[string]interface{}{}
-	poker, _ := ioutil.ReadAll(poke.Body)
-
-	err4 := json.Unmarshal(poker, &data)
-	checkerr(err4)
-	cp, err := http.Get("http://pokeapi.co/api/v2/pokemon/squirtle")
-	checkerr(err)
-	pnew, _ := ioutil.ReadAll(cp.Body)
-	mdata := Pokedata{}
-	err = json.Unmarshal(pnew, &mdata)
-	checkerr(err)
-	printit(mdata)
+	Scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Println("Enter a pokemon")
+		Scanner.Scan()
+		if Scanner.Text() == "done" {
+			break
+		}
+		cp, err := http.Get("http://pokeapi.co/api/v2/pokemon/" + Scanner.Text())
+		checkerr(err)
+		pnew, _ := ioutil.ReadAll(cp.Body)
+		mdata := Pokedata{}
+		err = json.Unmarshal(pnew, &mdata)
+		checkerr(err)
+		printit(mdata)
+	}
+	fmt.Println("bye")
 }
 
 func printit(data Pokedata) {
