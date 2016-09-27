@@ -72,6 +72,8 @@ func main() {
 
 }
 
+var Allpokemon []string
+
 func GetPokemon(name string) Pokedata {
 	pokelink := "https://pokeapi.co/api/v2/pokemon/" + name
 	fmt.Println(pokelink)
@@ -92,6 +94,10 @@ func ListPokemon() {
 	rawJson, _ := ioutil.ReadAll(raw.Body)
 	poka := Idkwtth{}
 	err = json.Unmarshal(rawJson, &poka)
+	for i := 0; i < len(poka.Results); i++ {
+		Allpokemon = append(Allpokemon, poka.Results[i].Name)
+	}
+	log.Print(Allpokemon)
 }
 
 func captureCC() {
