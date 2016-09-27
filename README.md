@@ -11,3 +11,6 @@ Caches the pokemon
 ###pokeapi -findall
 lists all pokemon
 caches the data
+
+##TODO
+Make pokeapi only cache the shortened data, not the full thing, for reasons
