@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	//"bufio"
 	"encoding/json"
 	"fmt"
 	C "github.com/skilstak/go-colors"
@@ -29,26 +29,23 @@ type Pokedata struct {
 
 func main() {
 	go captureCC()
-	Scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Println("Enter a pokemon")
-		Scanner.Scan()
-		if Scanner.Text() == "done" {
-			break
+	fmt.Println(os.Args)
+	for i := 1; i < len(os.Args); i++ {
+		if os.Args[i] == "-f" || os.Args[i] == "--find" {
+			pokelink := "https://pokeapi.co/api/v2/pokemon/" + os.Args[i+1]
+			fmt.Println(pokelink)
+			poke, err := http.Get(pokelink)
+			fmt.Println(poke.Body)
+			checkerr(err)
+			pokedat := Pokedata{}
+			idontcare, _ := ioutil.ReadAll(poke.Body)
+			err = json.Unmarshal(idontcare, &pokedat)
+			fmt.Println(pokedat)
+			checkerr(err)
+			printit(pokedat)
 		}
-		cp, err := http.Get("http://pokeapi.co/api/v2/pokemon/" + Scanner.Text())
-
-		pnew, _ := ioutil.ReadAll(cp.Body)
-		mdata := Pokedata{}
-		err = json.Unmarshal(pnew, &mdata)
-		if mdata.Weight == 0 {
-			fmt.Println(C.R + "no such pokemon")
-			continue
-		}
-		checkerr(err)
-		printit(mdata)
 	}
-	fmt.Println(C.R + "bye")
+
 }
 
 func captureCC() {
