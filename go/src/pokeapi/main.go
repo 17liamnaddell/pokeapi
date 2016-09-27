@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
+	//"os/signal"
 )
 
 type Pokedata struct {
@@ -42,7 +42,6 @@ func main() {
 		err := os.Mkdir(".pokeapi", 0777)
 		fmt.Println(err)
 	}
-	go captureCC()
 	fmt.Println(os.Args)
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "-f" || os.Args[i] == "--find" {
@@ -82,14 +81,16 @@ func GetPokemon(name string) Pokedata {
 	checkerr(err)
 	pokedat := Pokedata{}
 	idontcare, _ := ioutil.ReadAll(poke.Body)
-	_ = ioutil.WriteFile(name, idontcare, 0777)
 	err = json.Unmarshal(idontcare, &pokedat)
+	writeme, _ := json.Marshal(pokedat)
+	_ = ioutil.WriteFile(name, []byte(writeme), 0777)
 	checkerr(err)
 	return pokedat
 }
 
-func ListPokemon() {
-	raw, err := http.Get("https://pokeapi.co/api/v2/pokemon")
+func ListLink(URL string) {
+	raw, err := http.Get(URL)
+
 	checkerr(err)
 	rawJson, _ := ioutil.ReadAll(raw.Body)
 	poka := Idkwtth{}
@@ -100,13 +101,18 @@ func ListPokemon() {
 	log.Print(Allpokemon)
 }
 
-func captureCC() {
+func ListPokemon() {
 	for {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		b := <-c
-		if b == os.Interrupt {
-			fmt.Println(C.B + "type done to leave, or Enter a pokemon")
+		raw, _ := http.Get("https://pokeapi.co/api/v2/pokemon")
+		rawJson, _ := ioutil.ReadAll(raw.Body)
+		poka := Idkwtth{}
+		_ = json.Unmarshal(rawJson, &poka)
+		if poka.Next != "" {
+			ListLink(poka.Next)
+		} else {
+			for i := 0; i < len(Allpokemon); i++ {
+				GetPokemon(Allpokemon[i])
+			}
 		}
 	}
 }
