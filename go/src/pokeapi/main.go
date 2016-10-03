@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"text/template"
 	//"os/signal"
 )
 
@@ -34,8 +35,9 @@ type Idkwtth struct {
 	Next string `json:"next"`
 }
 
+var home = os.Getenv("HOME")
+
 func main() {
-	var home = os.Getenv("HOME")
 	if _, err := os.Stat(home + "/.pokeapi"); os.IsNotExist(err) == true {
 		fmt.Println(err)
 		os.Chdir(os.Getenv("HOME"))
@@ -45,19 +47,31 @@ func main() {
 	fmt.Println(os.Args)
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "-f" || os.Args[i] == "--find" {
-			os.Chdir(home + "/.pokeapi")
-			pokedataDirs, _ := os.Open("/.pokeapi")
-			myint := 0
-			dirs, _ := pokedataDirs.Readdirnames(myint)
-			for q := 0; q < len(dirs); q++ {
-				if dirs[i] == os.Args[i+1] {
-					fmt.Println("kekappa")
+			os.Chdir(home)
+
+			pokedir, err := os.Open(".pokeapi")
+			checkerr(err)
+			var myint int
+			pokedirs, err := pokedir.Readdirnames(myint)
+			checkerr(err)
+			stored := false
+			for l := 0; l < len(pokedirs); l++ {
+				fmt.Println(pokedirs[l])
+				if pokedirs[l] == os.Args[i+1] {
+					fmt.Println("hi")
+					pokemon, _ := ioutil.ReadFile(".pokeapi/" + os.Args[i+1])
+					pokedat := Pokedata{}
+					json.Unmarshal(pokemon, &pokedat)
+					printit(pokedat)
+					stored = true
+					break
 				}
+
 			}
-
-			pokedat := GetPokemon(os.Args[i+1])
-
-			printit(pokedat)
+			if stored == false {
+				pokedat := GetPokemon(os.Args[i+1])
+				printit(pokedat)
+			}
 		} else if os.Args[i] == "-rf" || os.Args[i] == "--removeData" {
 			os.Chdir(home + "/.pokeapi")
 			os.RemoveAll(".")
@@ -74,6 +88,7 @@ func main() {
 var Allpokemon []string
 
 func GetPokemon(name string) Pokedata {
+	os.Chdir(home + "/.pokeapi")
 	pokelink := "https://pokeapi.co/api/v2/pokemon/" + name
 	fmt.Println(pokelink)
 	poke, err := http.Get(pokelink)
@@ -83,8 +98,11 @@ func GetPokemon(name string) Pokedata {
 	idontcare, _ := ioutil.ReadAll(poke.Body)
 	err = json.Unmarshal(idontcare, &pokedat)
 	writeme, _ := json.Marshal(pokedat)
-	_ = ioutil.WriteFile(name, []byte(writeme), 0777)
+	fmt.Println("writing")
+	err1234 := ioutil.WriteFile(name, []byte(writeme), 0777)
+	fmt.Println(err1234)
 	checkerr(err)
+	os.Chdir(home)
 	return pokedat
 }
 
@@ -102,13 +120,19 @@ func ListLink(URL string) {
 }
 
 func ListPokemon() {
+	os.Chdir(home + "/.pokeapi")
+	Link := "https://pokeapi.co/api/v2/pokemon"
 	for {
-		raw, _ := http.Get("https://pokeapi.co/api/v2/pokemon")
+		fmt.Println("listn" + Link)
+		raw, _ := http.Get(Link)
 		rawJson, _ := ioutil.ReadAll(raw.Body)
+		fmt.Println(string(rawJson))
 		poka := Idkwtth{}
 		_ = json.Unmarshal(rawJson, &poka)
 		if poka.Next != "" {
-			ListLink(poka.Next)
+			fmt.Println("linkn")
+			ListLink(Link)
+			Link = poka.Next
 		} else {
 			for i := 0; i < len(Allpokemon); i++ {
 				GetPokemon(Allpokemon[i])
@@ -117,19 +141,28 @@ func ListPokemon() {
 	}
 }
 
+type Prints struct {
+	Type  string
+	AT    int
+	Thing string
+}
+
+var whtspc = `	`
+var MyTempl, _ = template.New("Our template demo").Parse(C.G + whtspc + "{{.Type}} {{.AT}}: {{.Thing}}" + C.Y + "\n")
+
 func printit(data Pokedata) {
 	fmt.Println(C.R+data.Name, ":")
-
-	var whtspc = `	`
-
 	rang := len(data.Abilities)
 
 	for i := 0; i < rang; i++ {
-		fmt.Println(C.B+whtspc, "Ability ", i, ": ", data.Abilities[i].Ability.Name)
+		realdata := Prints{"Ability", i, data.Abilities[i].Ability.Name}
+		_ = MyTempl.Execute(os.Stdout, realdata)
 	}
 	fmt.Println(C.M+whtspc, "Weight"+": ", data.Weight)
 	for q := 0; q < len(data.Types); q++ {
-		fmt.Println(C.G+whtspc, "Type ", q, ": ", data.Types[q].Type.Name+C.Y)
+		realdata := Prints{Type: "Type", AT: q, Thing: data.Types[q].Type.Name}
+		_ = MyTempl.Execute(os.Stdout, realdata)
+
 	}
 }
 
