@@ -1,6 +1,1 @@
-TODO:use text/template
-TODO:usage doc
-TODO:command interface
-TODO:Add caching 
-TODO:add fetchall
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"bufio"
 	"encoding/json"
 	"fmt"
 	C "github.com/skilstak/go-colors"
@@ -9,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"text/template"
-	//"os/signal"
 )
 
 type Pokedata struct {
@@ -37,18 +36,27 @@ type Idkwtth struct {
 
 var home = os.Getenv("HOME")
 
+func checkargs(i int) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("You forgot to put in a pokemon/generation")
+			os.Exit(0)
+		}
+	}()
+	_ = os.Args[i+1]
+}
+
 func main() {
 	if _, err := os.Stat(home + "/.pokeapi"); os.IsNotExist(err) == true {
 		fmt.Println(err)
 		os.Chdir(os.Getenv("HOME"))
 		err := os.Mkdir(".pokeapi", 0777)
-		fmt.Println(err)
+		fmt.Println(err, "Creating new .pokeapi directory")
 	}
-	fmt.Println(os.Args)
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "-f" || os.Args[i] == "--find" {
 			os.Chdir(home)
-
+			checkargs(i)
 			pokedir, err := os.Open(".pokeapi")
 			checkerr(err)
 			var myint int
@@ -56,9 +64,7 @@ func main() {
 			checkerr(err)
 			stored := false
 			for l := 0; l < len(pokedirs); l++ {
-				fmt.Println(pokedirs[l])
 				if pokedirs[l] == os.Args[i+1] {
-					fmt.Println("hi")
 					pokemon, _ := ioutil.ReadFile(".pokeapi/" + os.Args[i+1])
 					pokedat := Pokedata{}
 					json.Unmarshal(pokemon, &pokedat)
@@ -70,14 +76,18 @@ func main() {
 			}
 			if stored == false {
 				pokedat := GetPokemon(os.Args[i+1])
+				if pokedat.Weight == 0 {
+					fmt.Println(os.Args[i+1], " is not a pokemon")
+					os.Exit(0)
+				}
 				printit(pokedat)
 			}
 		} else if os.Args[i] == "-rf" || os.Args[i] == "--removeData" {
 			os.Chdir(home + "/.pokeapi")
 			os.RemoveAll(".")
 		} else if os.Args[i] == "-fa" || os.Args[i] == "--findAll" {
-			//list all pokemon
-			ListPokemon()
+			checkargs(i)
+			ListPokemon(os.Args[i+1])
 			//get all data from each pokemon and write that to the file
 
 		}
@@ -119,8 +129,39 @@ func ListLink(URL string) {
 	log.Print(Allpokemon)
 }
 
-func ListPokemon() {
+type Gen struct {
+	Gen   int
+	Start int
+	End   int
+}
+
+var Agen Gen
+
+func Sortgen(gen int) {
+	switch gen {
+	case 1:
+		Agen = Gen{1, 1, 151}
+	case 2:
+		Agen = Gen{2, 152, 251}
+	case 3:
+		Agen = Gen{3, 252, 386}
+	case 4:
+		Agen = Gen{4, 387, 493}
+	case 5:
+		Agen = Gen{5, 494, 649}
+	case 6:
+		Agen = Gen{6, 650, 721}
+	default:
+		fmt.Println("there is no generation ", gen)
+		os.Exit(0)
+	}
+}
+
+func ListPokemon(gen string) {
 	os.Chdir(home + "/.pokeapi")
+	nen, _ := strconv.Atoi(gen)
+	Sortgen(nen)
+	fmt.Println(Agen)
 	Link := "https://pokeapi.co/api/v2/pokemon"
 	for {
 		fmt.Println("listn" + Link)
@@ -134,8 +175,18 @@ func ListPokemon() {
 			ListLink(Link)
 			Link = poka.Next
 		} else {
-			for i := 0; i < len(Allpokemon); i++ {
+			broke := false
+			for i := Agen.Start; i < len(Allpokemon); i++ {
+				if i > Agen.End {
+					broke = true
+					fmt.Println("broke")
+					break
+				}
+				fmt.Println("count: ", i)
 				GetPokemon(Allpokemon[i])
+			}
+			if broke == true {
+				break
 			}
 		}
 	}
