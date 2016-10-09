@@ -1,16 +1,13 @@
 pokeapi
 
-#CHANGES NOT IN AFFECT: NOT ACCURATE API
 #pokeapi
 ##Usage
-###pokeapi -rm 
+###pokeapi -rm or -removeAll 
 Remove all cached data in ~/.pokeapi
-###pokeapi -find "pokemon name"
+
+###pokeapi -find or -f "pokemon name"
 will find a pokemon under that name
 Caches the pokemon 
-###pokeapi -findall
-lists all pokemon
+###pokeapi -findall or -fa gen
+lists all pokemon in the specific generation, then
 caches the data
-
-##TODO
-Make pokeapi only cache the shortened data, not the full thing, for reasons
