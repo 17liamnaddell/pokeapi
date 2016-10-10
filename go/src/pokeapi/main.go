@@ -109,7 +109,7 @@ func GetPokemon(name string) Pokedata {
 	err = json.Unmarshal(idontcare, &pokedat)
 	writeme, _ := json.Marshal(pokedat)
 	fmt.Println("writing")
-	err1234 := ioutil.WriteFile(name, []byte(writeme), 0777)
+	err1234 := ioutil.WriteFile(name, []byte(writeme), 0666)
 	fmt.Println(err1234)
 	checkerr(err)
 	os.Chdir(home)
