@@ -54,6 +54,9 @@ func main() {
 		fmt.Println(err, "Creating new .pokeapi directory")
 	}
 	for i := 1; i < len(os.Args); i++ {
+		if os.Args[i] == "-h" || os.Args[i] == "--help" {
+			fmt.Println("use -f <name>, use -fa <generation> to cache all pokemon of that generation, use -rf to remove pokemon in the cache")
+		}
 		if os.Args[i] == "-f" || os.Args[i] == "--find" {
 			os.Chdir(home)
 			checkargs(i)
