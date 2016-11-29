@@ -154,6 +154,8 @@ func Sortgen(gen int) {
 		Agen = Gen{5, 494, 649}
 	case 6:
 		Agen = Gen{6, 650, 721}
+	case 7:
+		Agen = Gen{7, 721, 781}
 	default:
 		fmt.Println("there is no generation ", gen)
 		os.Exit(0)
