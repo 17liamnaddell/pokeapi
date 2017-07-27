@@ -11,13 +11,40 @@ import (
 )
 
 type Pokemon struct {
-	Weight int `json:"weight"`
-	Name string `json:"name"`
-	Id int `json:"id"`
+	Weight int    `json:"weight"`
+	Name   string `json:"name"`
+	Id     int    `json:"id"`
 }
+
+var home = "/home/liam"
 
 var pokeclient = http.Client{
 	Timeout: time.Second * 10, // Maximum of 2 secs
+}
+
+func checkerr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func cachePokemon(name string, body []byte) {
+	fmt.Println("Caching")
+	file, err := os.Create(home + "/.pokeapi/" + name)
+	checkerr(err)
+	_, err2 := file.Write(body)
+	checkerr(err2)
+}
+
+//check for file
+func cff(name string) bool {
+	_, err := os.Stat(home + "/.pokeapi/" + name)
+	if err != nil {
+		fmt.Println("File not found")
+		return false
+	}
+	return true
+
 }
 
 func getLink(link string) *http.Response {
@@ -36,25 +63,39 @@ func getLink(link string) *http.Response {
 }
 func getPokemon(name string) Pokemon {
 	url := "http://pokeapi.co/api/v2/pokemon/" + name
-	res := getLink(url)
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
+	var body []byte
+	var ff = cff(name)
+	if ff {
+		fmt.Println("Using cache")
+		file, err := ioutil.ReadFile(home + "/.pokeapi/" + name)
+		body = file
+		checkerr(err)
+	} else {
+		fmt.Println("getting link")
+		res := getLink(url)
+		var readErr error
+		body, readErr = ioutil.ReadAll(res.Body)
+		checkerr(readErr)
 	}
 
 	pokemon := Pokemon{}
 	jsonErr := json.Unmarshal(body, &pokemon)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+	checkerr(jsonErr)
 	if pokemon.Weight == 0 && pokemon.Name == "" {
 		log.Fatal("not a pookeman")
 	}
+	if !ff {
+		cachePokemon(name, body)
+	}
 	return pokemon
 }
-func main() {
+
+func startGetPokemon() {
 	pokemon := getPokemon(os.Args[1])
 	fmt.Println(pokemon.Weight)
 	fmt.Println(pokemon.Name)
 	fmt.Println(pokemon.Id)
+}
+func main() {
+	startGetPokemon()
 }
