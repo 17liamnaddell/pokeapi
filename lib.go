@@ -1,4 +1,4 @@
-package main
+package pokeapi
 
 import (
 	"encoding/json"
@@ -90,12 +90,7 @@ func getPokemon(name string) Pokemon {
 	return pokemon
 }
 
-func startGetPokemon() {
-	pokemon := getPokemon(os.Args[1])
-	fmt.Println(pokemon.Weight)
-	fmt.Println(pokemon.Name)
-	fmt.Println(pokemon.Id)
-}
-func main() {
-	startGetPokemon()
+func StartGetPokemon(name string) Pokemon {
+	pokemon := getPokemon(name)
+	return pokemon
 }
