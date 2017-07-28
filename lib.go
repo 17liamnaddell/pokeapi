@@ -14,6 +14,11 @@ type Pokemon struct {
 	Weight int    `json:"weight"`
 	Name   string `json:"name"`
 	Id     int    `json:"id"`
+	Types  []struct {
+		Type struct {
+			Name string `json:"name"`
+		} `json:"type"`
+	} `json:"types"`
 }
 
 var home = "/home/liam"

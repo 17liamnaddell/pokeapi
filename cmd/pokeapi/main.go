@@ -4,6 +4,7 @@ import "github.com/liamnaddell/pokeapi"
 import "os"
 import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gtk"
+import "fmt"
 
 //import "github.com/mattn/go-gtk/gdk"
 
@@ -11,13 +12,21 @@ import "github.com/mattn/go-gtk/gtk"
 
 func main() {
 	pokemon := pokeapi.StartGetPokemon(os.Args[1])
+	fmt.Println(pokemon.Types[0].Type.Name)
 	window := basicGtk()
+
+	//vbox/label
 	vbox := gtk.NewVBox(false, 1)
 	label := newHeader(pokemon.Name)
-	vbox.PackStart(label, false, false, 3)
+	vbox.PackStart(label, false, true, 3)
 
-	sep := gtk.NewVSeparator()
-	vbox.Add(sep)
+	label2 := gtk.NewLabel(pokemon.Types[0].Type.Name)
+	hbox := gtk.NewHBox(false, 1)
+	hbox.PackStart(label2, false, true, 0)
+	vbox.PackStart(hbox, false, true, 0)
+	hbox.ShowAll()
+	//sep := gtk.NewVSeparator()
+	//vbox.Add(sep)
 	//show all
 	vbox.ShowAll()
 	window.Add(vbox)
