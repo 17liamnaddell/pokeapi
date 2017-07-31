@@ -1,27 +1,31 @@
 package main
 
 import "github.com/liamnaddell/pokeapi"
-import "os"
 import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gtk"
-
-//import "fmt"
 import "strconv"
-
-//import "github.com/mattn/go-gtk/gdk"
+import "os"
 
 //label.SetSizeRequest(20, 20)
+type Types struct {
+	Type struct {
+		Name string `json:"name"`
+	} `json:"type"`
+}
 
 func main() {
-	pokemon := pokeapi.StartGetPokemon(os.Args[1])
+	pokemon, err := pokeapi.StartGetPokemon("pikachu")
+	if err != nil {
+		os.Exit(1)
+	}
 	//fmt.Println(pokemon.Types[0].Type.Name)
 	window := basicGtk()
 
 	//vbox/label
 	vbox := gtk.NewVBox(false, 1)
 	Tsep := gtk.NewHSeparator()
-	label := newHeader(pokemon.Name)
-	vbox.PackStart(label, false, true, 0)
+	headerLabel := newHeader(pokemon.Name)
+	vbox.PackStart(headerLabel, false, true, 0)
 	vbox.PackStart(Tsep, false, true, 0)
 
 	//boxes
@@ -48,14 +52,45 @@ func main() {
 
 	//hbox2
 	hbox2 := gtk.NewHBox(true, 3)
-	vbox.PackStart(hbox2, true, true, 2)
-	sep4 := gtk.NewVSeparator()
-	hbox2.Add(sep4)
+	vbox.PackStart(hbox2, true, true, 0)
+
+	//vboxleft
+	vboxleft := gtk.NewVBox(false, 0)
+	hbox2.PackStart(vboxleft, true, true, 0)
+	button := gtk.NewButtonWithLabel("Who's That Pokemon!")
+	vboxleft.PackEnd(button, false, false, 0)
+	entry := gtk.NewEntry()
+	vboxleft.PackEnd(entry, false, false, 0)
+
+	//button
+	button.Clicked(func() {
+		//reset all in box
+		NewPokemon, err := pokeapi.StartGetPokemon(entry.GetText())
+		if err != nil {
+			button.SetLabel("Could Not find that pokemon")
+			return
+		}
+
+		//reset header
+		headerLabel.SetMarkup("<span foreground=\"blue\" size=\"20000\"> <b>" + NewPokemon.Name + "</b></span>")
+
+		//reset type
+		label2.SetMarkup("<span size=\"10000\"> type:<b>  " + NewPokemon.Types[0].Type.Name + "  </b></span>")
+
+		//id stuff
+		str2 := strconv.Itoa(NewPokemon.Id)
+		label3.SetMarkup("<span size=\"15000\"> id:<b> " + str2 + " </b></span>")
+		button.SetLabel("Who's That Pokemon!")
+	})
+	//sep
+
+	//vboxright
 
 	//mid sep
 
 	//vbox.Add(sep)
 	//show all
+	vboxleft.ShowAll()
 	hbox2.ShowAll()
 	hbox.ShowAll()
 	vbox.ShowAll()
@@ -64,6 +99,7 @@ func main() {
 	gtk.Main()
 
 }
+
 func labelWMkup(markup string) *gtk.Label {
 	label := gtk.NewLabel("")
 	label.SetMarkup(markup)

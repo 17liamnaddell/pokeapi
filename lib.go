@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -66,7 +67,7 @@ func getLink(link string) *http.Response {
 	}
 	return res
 }
-func getPokemon(name string) Pokemon {
+func getPokemon(name string) (*Pokemon, error) {
 	url := "http://pokeapi.co/api/v2/pokemon/" + name
 	var body []byte
 	var ff = cff(name)
@@ -87,15 +88,15 @@ func getPokemon(name string) Pokemon {
 	jsonErr := json.Unmarshal(body, &pokemon)
 	checkerr(jsonErr)
 	if pokemon.Weight == 0 && pokemon.Name == "" {
-		log.Fatal("not a pookeman")
+		return new(Pokemon), errors.New(fmt.Sprintf("%s is not a pokemon", name))
 	}
 	if !ff {
 		cachePokemon(name, body)
 	}
-	return pokemon
+	return &pokemon, nil
 }
 
-func StartGetPokemon(name string) Pokemon {
-	pokemon := getPokemon(name)
-	return pokemon
+func StartGetPokemon(name string) (*Pokemon, error) {
+	pokemon, err := getPokemon(name)
+	return pokemon, err
 }
