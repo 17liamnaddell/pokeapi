@@ -46,8 +46,17 @@ func main() {
 	hbox.PackEnd(label3, false, true, 0)
 	hbox.PackEnd(sep3, false, true, 0)
 
+	//hbox2
+	hbox2 := gtk.NewHBox(true, 3)
+	vbox.PackStart(hbox2, true, true, 2)
+	sep4 := gtk.NewVSeparator()
+	hbox2.Add(sep4)
+
+	//mid sep
+
 	//vbox.Add(sep)
 	//show all
+	hbox2.ShowAll()
 	hbox.ShowAll()
 	vbox.ShowAll()
 	window.Add(vbox)
