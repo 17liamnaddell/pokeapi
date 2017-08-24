@@ -11,9 +11,11 @@ all:
 	cd cmd/$(PROG); $(GO) build $(LDFLAGS)
 	mv cmd/$(PROG)/$(PROG) .
 	
+	
 
 install:
-	cp $(PROG) $(FINAL)
+	mkdir -p ~/.pokeapi
+	cp --preserve $(PROG) $(FINAL)
 
 clean:
 	rm -f $(PROG)
