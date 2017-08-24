@@ -15,11 +15,12 @@ all:
 
 install:
 	mkdir -p ~/.pokeapi
-	cp --preserve $(PROG) $(FINAL)
+	cp $(PROG) $(FINAL)
+	chmod a+x $(FINAL)$(PROG)
 
 clean:
 	rm -f $(PROG)
 	rm -rf vendor/
 
 uninstall:
-	rm $(FINAL)/$(PROG)
+	rm $(FINAL)$(PROG)
