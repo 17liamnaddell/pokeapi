@@ -1,6 +1,6 @@
 DEP=$(GOPATH)/bin/dep
 GO=go
-FINAL=/usr/local/bin
+FINAL=/usr/local/bin/
 VERSION=0.0.1-beta
 LDFLAGS=-ldflags "-X main.Version=$(VERSION)"
 PROG=pokeapi
