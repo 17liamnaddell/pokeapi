@@ -5,6 +5,9 @@ import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gtk"
 import "strconv"
 import "os"
+import "github.com/urfave/cli"
+
+var Version string
 
 //label.SetSizeRequest(20, 20)
 type Types struct {
@@ -14,9 +17,18 @@ type Types struct {
 }
 
 func main() {
+	app := cli.NewApp()
+	app.Name = "pokeapi"
+	app.Usage = "graphical tool for querying the PokeApi database"
+	app.Action = start
+	app.Version = Version
+	app.Run(os.Args)
+}
+
+func start(c *cli.Context) error {
 	pokemon, err := pokeapi.StartGetPokemon("pikachu")
 	if err != nil {
-		os.Exit(1)
+		cli.NewExitError(err, 1)
 	}
 	//fmt.Println(pokemon.Types[0].Type.Name)
 	window := basicGtk()
@@ -98,6 +110,7 @@ func main() {
 	window.ShowAll()
 	gtk.Main()
 
+	return nil
 }
 
 func labelWMkup(markup string) *gtk.Label {

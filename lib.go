@@ -35,7 +35,6 @@ func checkerr(err error) {
 }
 
 func cachePokemon(name string, body []byte) {
-	fmt.Println("Caching")
 	file, err := os.Create(home + "/.pokeapi/" + name)
 	checkerr(err)
 	_, err2 := file.Write(body)
@@ -46,7 +45,6 @@ func cachePokemon(name string, body []byte) {
 func cff(name string) bool {
 	_, err := os.Stat(home + "/.pokeapi/" + name)
 	if err != nil {
-		fmt.Println("File not found")
 		return false
 	}
 	return true
@@ -72,12 +70,10 @@ func getPokemon(name string) (*Pokemon, error) {
 	var body []byte
 	var ff = cff(name)
 	if ff {
-		fmt.Println("Using cache")
 		file, err := ioutil.ReadFile(home + "/.pokeapi/" + name)
 		body = file
 		checkerr(err)
 	} else {
-		fmt.Println("getting link")
 		res := getLink(url)
 		var readErr error
 		body, readErr = ioutil.ReadAll(res.Body)
